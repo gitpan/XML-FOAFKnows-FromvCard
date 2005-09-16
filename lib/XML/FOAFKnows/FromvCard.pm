@@ -11,7 +11,7 @@ use Digest::SHA1 qw(sha1_hex);
 
 use base qw( Text::vCard );
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 sub format {
   my $that  = shift;

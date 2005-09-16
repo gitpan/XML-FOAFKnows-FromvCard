@@ -1,5 +1,5 @@
-XML-FOAFKnows-FromvCard version 0.2
-=====================================
+XML-FOAFKnows-FromvCard version 0.3
+===================================
 
 This module takes a vCard string parses it using L<Text::vCard> and
 attempts to make C<foaf:knows> records from it. It's scope is limited
@@ -13,9 +13,24 @@ It is also conservative in what it outputs. If a vCard contains a
 it exists and a homepage if it exists. A discussion of these issues
 will appear in this module later.
 
-The module also contains a script foafvcard.pl. With that, you can
+The module also contains a script foafvcard. With that, you can
 produce a useful FOAF file from the command line with some
-parameters. Have a look, more documentation will be added later.
+parameters. It will install itself to your system's directory for
+executables and can be used directly after installation.
+
+The script takes a vCard file as primary input, but can also take
+other parameters:
+
+--seeAlso=URI
+	An URI to your, the author's FOAF file.
+
+--uri=URI
+	Your canonical URI, for example your own Person record.
+
+--email=your@email.address
+	Your email address, to be hashed and included as an Inverse
+	Functional Property, to identify you as a person.
+
 
 More information will appear here later.
 

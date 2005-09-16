@@ -1,5 +1,11 @@
 Revision history for Perl extension XML::FOAFKnows::FromvCard.
 
+0.3   2005-09-17 00:20
+	- New tests.
+	- Will install the foafvcard script appropriately and make it more 
+	  usable.
+	- A little more documentation.
+	
 0.2   2005-08-30 01:00
 	- Renamed it since it isn't really a Formatter, even though it
 	  conforms to the specification. Thanks to Tom Insam for
