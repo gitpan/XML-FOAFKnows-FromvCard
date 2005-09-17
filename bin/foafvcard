@@ -10,8 +10,9 @@ use XML::FOAFKnows::FromvCard;
 my $file;
 my $seeAlsoUri;
 my $myUri;
-my $myEmail; 
-
+my $myEmail;
+my $privacy;
+my $attribute;
 
 foreach my $clp (@ARGV) {
   if ($clp =~ m/^--seeAlso=(\S+)$/) {
@@ -20,13 +21,17 @@ foreach my $clp (@ARGV) {
     $myUri = $1;
   } elsif ($clp =~ m/^--email=(\S+)$/) {
     $myEmail = $1;
+  } elsif ($clp =~ m/^--privacy=(\S+)$/) {
+    $privacy = $1;
+  } elsif ($clp =~ m/^--attribute=(\S+)$/) {
+    $attribute = $1;
   } else {
     $file = $clp;
   }
 }
 
 unless ($file) {
-  print 'Usage: [--seeAlso=URI|--uri=URI|--email=your@email.address] file' . "\n";
+  print 'Usage: [--seeAlso=URI|--uri=URI|--email=your@email.address|--privacy=(PRIVATE|PUBLIC)|--attribute=VCARDATTRIBUTE] file' . "\n";
   exit(1);
 }
 
@@ -36,5 +41,5 @@ close VCF;
 
 
 
-my $formatter = XML::FOAFKnows::FromvCard->format(join('',@data), (uri => $myUri, seeAlso => $seeAlsoUri, email => $myEmail));
+my $formatter = XML::FOAFKnows::FromvCard->format(join('',@data), (uri => $myUri, seeAlso => $seeAlsoUri, email => $myEmail, attribute => $attribute, privacy => $privacy));
 print $formatter->document('UTF-8');

@@ -1,4 +1,4 @@
-XML-FOAFKnows-FromvCard version 0.3
+XML-FOAFKnows-FromvCard version 0.4
 ===================================
 
 This module takes a vCard string parses it using L<Text::vCard> and
@@ -31,8 +31,25 @@ other parameters:
 	Your email address, to be hashed and included as an Inverse
 	Functional Property, to identify you as a person.
 
+--attribute=VCARDATTRIBUTE
+	You may enter the name of an attribute that may contain
+	CONFIDENTIAL, PRIVATE or PUBLIC, and the amount of information
+	included in the resulting FOAF will depend on that
+	attribute. The default is CLASS, which is used by at least
+	KAddressbook.
+
+--privacy=PRIVATE|PUBLIC
+	You may set this to either PRIVATE or PUBLIC, or leave it
+	unset. In the case of PRIVATE, it will return only minimal
+	data for the person, in the case of PUBLIC, it will return
+	quite a lot of information. 
+
+See the module's POD for more details, there is also a longer
+discussion of the privacy issues.
+
 
 More information will appear here later.
+
 
 INSTALLATION
 
@@ -46,7 +63,10 @@ following:
 
 DEPENDENCIES
 
-This module requires Text::vCard and Digest::SHA1.
+This module requires Text::vCard and Digest::SHA1. There are known
+Segmentation fault problems with Text::vCard::Addressbook prior to
+1.96 with some files, so in case you experience segfaults, make sure
+you have at least this version.
 
 
 SUBVERSION REPOSITORY

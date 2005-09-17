@@ -6,7 +6,7 @@ WriteMakefile(
 	      NAME              => 'XML::FOAFKnows::FromvCard',
 	      VERSION_FROM      => 'lib/XML/FOAFKnows/FromvCard.pm', # finds $VERSION
 	      PREREQ_PM         => {
-				    Text::vCard => 0,
+				    Text::vCard => 1.96, # Older segfaults
 				    Digest::SHA1 => 0,
 				   },
 	      ABSTRACT_FROM  => 'lib/XML/FOAFKnows/FromvCard.pm', # retrieve abstract from module

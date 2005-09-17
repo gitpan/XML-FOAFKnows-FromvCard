@@ -11,7 +11,7 @@ use Digest::SHA1 qw(sha1_hex);
 
 use base qw( Text::vCard );
 
-our $VERSION = '0.3';
+our $VERSION = '0.4';
 
 sub format {
   my $that  = shift;
@@ -21,12 +21,18 @@ sub format {
       'source_text' => $text,
   });
 
+  my $privstatattrib = $config{attribute} || 'CLASS';
   # Parse and build the fragment
   my $records;
   my @urls = ();
   my $counts = 0;
   foreach my $vcard ($address_book->vcards()) {
-    my $privacystat = ($vcard->get('CLASS'))[0]->value; # Check the status and generate full records only for public records
+    my $privacystat = 'PRIVATE'; # The default privacy option if nothing else is set
+    if (defined($config{privacy})) {
+      $privacystat = uc($config{privacy});
+    } elsif (($vcard->get($privstatattrib))[0]) {
+      $privacystat = ($vcard->get($privstatattrib))[0]->value; # Check the status and generate full records only for public records
+    }
     next if ($privacystat eq 'CONFIDENTIAL');
     my @email = ($vcard->get('EMAIL'));
     my $url = ($vcard->get('URL'))[0];
@@ -42,10 +48,13 @@ sub format {
     }
 
     foreach (@email) {
+      next unless (defined($_));
       $records .= "\n\t\t<foaf:mbox_sha1sum>" . sha1_hex('mailto:' . $_->value) . '</foaf:mbox_sha1sum>';
     }
     if ($url) {
-      $records .= "\n\t\t".'<foaf:homepage rdf:resource="'.$url->value.'"/>';
+      my $tmp = $url->value;
+      $tmp =~ s/\\:/:/g; # Some files seem to have colons in URLs escaped
+      $records .= "\n\t\t".'<foaf:homepage rdf:resource="'.$tmp.'"/>';
     }
     my $fullname = '';
     if ($privacystat eq 'PUBLIC') {
@@ -63,11 +72,13 @@ sub format {
 	$records .= "\n\t\t<foaf:name>".($vcard->get('FN'))[0]->fullname.'</foaf:name>';
 	$fullname = ($vcard->get('FN'))[0]->fullname;
       }
-      # Now we build the URL to be returned by the links method
-      if ($vcard->get('URL')) {
-	foreach my $url2 ($vcard->get('URL')) {
-	  push(@urls, {uri => $url2->value, title => $fullname});
-	}
+    }
+    # Now we build the URL to be returned by the links method
+    if ($vcard->get('URL')) {
+      foreach my $url2 ($vcard->get('URL')) {
+	my $tmp = $url2->value;
+	$tmp =~ s/\\:/:/g;
+	push(@urls, {uri => $tmp, title => $fullname});
       }
     }
     $records .= "\n\t</foaf:Person>\n</foaf:knows>\n";
@@ -142,12 +153,6 @@ to that, it is not intended to be a full vCard to RDF conversion
 module, it just wants to make reasonable knows records of your
 contacts.
 
-It is also conservative in what it outputs. If a vCard contains a
-"CONFIDENTIAL" class, it will write nothing, and unless a there is a
-"PUBLIC" class, it will only output the SHA1-hashed mailbox, a nick if
-it exists and a homepage if it exists. A discussion of these issues
-will appear in this module later.
-
 
 =head1 METHODS
 
@@ -159,7 +164,7 @@ of the same contexts as a formatter.
 
 =over
 
-=item C<format($string, [(seeAlso => $seeAlsoUri, uri => $myUri, email => $myEmail) )>
+=item C<format($string, [(seeAlso => $seeAlsoUri, uri => $myUri, email => $myEmail, attribute => 'CLASS', privacy => 'PRIVATE|PUBLIC') )>
 
 The format function that you call to initialise the converter. It
 takes the plain text as a string argument and returns an object of
@@ -173,6 +178,11 @@ might want to specify C<seeAlso> to an URL to the rest of your FOAF
 and you should specify one of C<uri> or C<email> to identify you as a
 person. The former should be your canonical URI, the latter the email
 address you want to use to identify yourself.
+
+C<privacy> and C<attribute> are privacy options, and they can
+optionally be set to indicate what level of details should be included
+in the output. See the discussion in L</"Privacy Settings"> for further
+details.
 
 =item C<document([$charset])>
 
@@ -197,19 +207,54 @@ Is meaningless for vCards, so will return C<undef>.
 
 =back
 
+=head2 Privacy Settings
+
+By default, this module is conservative in what it outputs. FOAF is a
+very powerful and will give us many interesting applications when we
+compile data about people. However, people may also feel that their
+privacy is compromised by having even their name so readily
+available. You will have to be concerned about the privacy of your
+friends.
+
+vCards commonly contain an attribute that indicate a privacy level of
+the vCard. The name of this attribute can be set using the
+C<attribute> parameter to C<format> and defaults to C<CLASS>.
+
+If this attribute contains a "CONFIDENTIAL" value, this module will
+write nothing, and unless a there is a "PUBLIC" class, it will only
+output the SHA1-hashed mailbox, a nick if it exists and a homepage if
+it exists.
+
+You may also set a C<privacy> parameter to C<format>. If set, it will
+override the above attribute for all vCards in the input. It may be
+set to C<PRIVATE> or C<PUBLIC>. In the first case, it will make sure
+only the above minimal information is included, in the latter, it will
+include many more properties (not defined, as it may change).
+
+If neither the privacy C<attribute> can be found, nor the C<privacy>
+parameter, it will default to C<PRIVATE>.
+
+Finally, note that even though we are hashing the e-mail addresses,
+they are not impossible to crack. It is, for many purposes, not
+infeasible to recover the plaintext e-mail addresses by a dictionary
+attack, i.e. combine common ISP domains with common names, and compare
+them with the hash. Hashing is therefore not a 100% guarantee that
+your friend's cleartext addresses will remain a secret if a determined
+attacker seeks them.
+
+
 =head1 BUGS/TODO
 
 This is presently an alpha release. It should do most things OK, but
-it is only tested on my own KAddressbook files, and works there. On
-other files, it may not produce good results, in fact, it may even
-croak on data it doesn't understand.
+it has only been tested on vCards from two different sources.
 
 Also, it is problematic to produce a full FOAF document, since the
 vCard has no concept at all of who knows all these folks. I have tried
 to approach this by allowing the URI of the person to be entered, but
 I don't know if this is workable.
 
-Feedback is very much appreciated.
+Feedback is very much appreciated. One may also report bugs at
+L<https://rt.cpan.org/NoAuth/Bugs.html?Dist=XML-FOAFKnows-FromvCard>
 
 
 =head1 SEE ALSO

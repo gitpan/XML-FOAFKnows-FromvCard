@@ -1,5 +1,14 @@
 Revision history for Perl extension XML::FOAFKnows::FromvCard.
 
+0.4   2005-09-18 00:50
+	- More privacy features.
+	- More documentation, especially about privacy issues.
+	- Many more tests.
+	- Added a dependency to the most recent Text::vCard since previous
+	  versions had seqfault issues.
+	- URLs will be added even for non-public data, but not with title.
+	- Thanks to Libby Miller for sharing her vCards and for testing. :-)
+	
 0.3   2005-09-17 00:20
 	- New tests.
 	- Will install the foafvcard script appropriately and make it more 
