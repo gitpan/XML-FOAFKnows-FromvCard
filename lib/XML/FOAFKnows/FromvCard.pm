@@ -1,6 +1,6 @@
 package XML::FOAFKnows::FromvCard;
 
-use 5.006;
+use 5.007;
 use strict;
 use warnings;
 use Carp;
@@ -8,10 +8,11 @@ use Carp;
 use Text::vCard::Addressbook;
 use Text::vCard;
 use Digest::SHA1 qw(sha1_hex);
+use IDNA::Punycode;
 
 use base qw( Text::vCard );
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 
 sub format {
   my $that  = shift;
@@ -23,7 +24,7 @@ sub format {
 
   my $privstatattrib = $config{attribute} || 'CLASS';
   # Parse and build the fragment
-  my $records;
+  my $records = '';
   my @urls = ();
   my $counts = 0;
   foreach my $vcard ($address_book->vcards()) {
@@ -41,7 +42,9 @@ sub format {
     $records .= "<foaf:knows>\n\t<foaf:Person";
     # TODO: nodeIDs, but how to generate...?
     if (($vcard->get('NICKNAME'))[0]) { # a nodeID on the Person record can be useful
-      $records .= ' rdf:nodeID="' . ($vcard->get('NICKNAME'))[0]->value . '">'.
+      my $punynick = encode_punycode(($vcard->get('NICKNAME'))[0]->value); # puny-encode any nicks,
+      $punynick =~ s/\s/_/gs; # and replace any whitespace with underscores
+      $records .= ' rdf:nodeID="' . $punynick . '">'.
 	"\n\t\t<foaf:nick>" . ($vcard->get('NICKNAME'))[0]->value . '</foaf:nick>';
     } else {
       $records .= ' rdf:nodeID="person'.$counts.'">';
@@ -145,6 +148,10 @@ XML::FOAFKnows::FromvCard - Perl module to create simple foaf:knows records from
   my $formatter = XML::FOAFKnows::FromvCard->format($data);
   print $formatter->fragment;
 
+The C<foafvcard> script in the distribution is also a good and more
+elaborate usage example.
+
+
 =head1 DESCRIPTION
 
 This module takes a vCard string parses it using L<Text::vCard> and
@@ -183,6 +190,9 @@ C<privacy> and C<attribute> are privacy options, and they can
 optionally be set to indicate what level of details should be included
 in the output. See the discussion in L</"Privacy Settings"> for further
 details.
+
+You should ensure that the data passed is UTF-8, and has the UTF-8
+flag set, as invalid RDF C<nodeID>s may result if you don't.
 
 =item C<document([$charset])>
 
@@ -245,8 +255,8 @@ attacker seeks them.
 
 =head1 BUGS/TODO
 
-This is presently an alpha release. It should do most things OK, but
-it has only been tested on vCards from two different sources.
+This is presently a beta release. It should do most things OK, but
+it has only been tested on vCards from three different sources.
 
 Also, it is problematic to produce a full FOAF document, since the
 vCard has no concept at all of who knows all these folks. I have tried
@@ -254,7 +264,7 @@ to approach this by allowing the URI of the person to be entered, but
 I don't know if this is workable.
 
 Feedback is very much appreciated. One may also report bugs at
-L<https://rt.cpan.org/NoAuth/Bugs.html?Dist=XML-FOAFKnows-FromvCard>
+https://rt.cpan.org/NoAuth/Bugs.html?Dist=XML-FOAFKnows-FromvCard
 
 
 =head1 SEE ALSO
@@ -267,8 +277,6 @@ This module is currently maintained in a Subversion repository. The
 trunk can be checked out anonymously using e.g.:
 
   svn checkout http://svn.kjernsmo.net/XML-FOAFKnows-FromvCard/trunk/ FOAFKnows
-
-
 
 
 =head1 AUTHOR

@@ -1,5 +1,15 @@
 Revision history for Perl extension XML::FOAFKnows::FromvCard.
 
+0.5   2005-10-12 23:00
+	- Punycode-encode nodeIDs, to support nicks that have non-ASCII
+	  characters.
+	- Document that people will have to ensure that their input is
+	  UTF-8.
+	- foafvcard attempts to decode the data to ensure that it is
+	  UTF-8, as is required above.
+	- I think these UTF-8 changes makes it depend on 5.7.3.
+	- Handle no data more gracefully.
+
 0.4   2005-09-18 00:50
 	- More privacy features.
 	- More documentation, especially about privacy issues.

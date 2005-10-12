@@ -1,4 +1,4 @@
-XML-FOAFKnows-FromvCard version 0.4
+XML-FOAFKnows-FromvCard version 0.5
 ===================================
 
 This module takes a vCard string parses it using L<Text::vCard> and
