@@ -185,7 +185,7 @@ ok(eq_array($expectedlinks, $text5->links), 'All links and titles match for publ
 ok(my $text6 = XML::FOAFKnows::FromvCard->format($data, (privacy=>'CONFIDENTIAL')),
 					  "Constructing with CONFIDENTIAL");
 
-ok(!defined($text6->fragment), 'Nothing comes out, as expected');
+ok(!$text6->fragment, 'Nothing comes out, as expected');
 
 ok(eq_array([], $text6->links), 'No links returned');
 

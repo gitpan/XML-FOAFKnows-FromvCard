@@ -9,3 +9,4 @@ README
 SIGNATURE
 t/01use.t
 t/02insert.t
+t/03utf8.t

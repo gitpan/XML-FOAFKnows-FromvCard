@@ -12,7 +12,7 @@ use IDNA::Punycode;
 
 use base qw( Text::vCard );
 
-our $VERSION = '0.5';
+our $VERSION = '0.51';
 
 sub format {
   my $that  = shift;
