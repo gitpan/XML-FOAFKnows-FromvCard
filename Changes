@@ -1,5 +1,10 @@
 Revision history for Perl extension XML::FOAFKnows::FromvCard.
 
+0.6   2005-11-19 23:46
+        - Fixed a spec violation (duh!) bug, I had used uri instead of
+	  url.
+
+
 0.51  2005-10-20 00:25
         - Previous release did not pass tests, so, fixed that bug.
 	- Added another 6 UTF8-related tests.

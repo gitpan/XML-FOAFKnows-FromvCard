@@ -126,11 +126,11 @@ ok(my $links = $text->links, 'Assigning links');
 my $expectedlinks = [
           {
             'title' => '',
-            'uri' => 'http://www.foobar.org/'
+            'url' => 'http://www.foobar.org/'
           },
           {
             'title' => 'John Smith',
-            'uri' => 'http://www.smith.invalid.uk/'
+            'url' => 'http://www.smith.invalid.uk/'
           }
         ];
 
@@ -145,11 +145,11 @@ ok($text2->fragment eq $onlyprivateexpected, 'Only private comes out as expected
 $expectedlinks = [
           {
             'title' => '',
-            'uri' => 'http://www.foobar.org/'
+            'url' => 'http://www.foobar.org/'
           },
           {
             'title' => '',
-            'uri' => 'http://www.smith.invalid.uk/'
+            'url' => 'http://www.smith.invalid.uk/'
           }
         ];
 
@@ -172,11 +172,11 @@ ok($text5->fragment eq $publicoverrideexpected, 'Everything comes out as expecte
 $expectedlinks = [
 		  {
 		   'title' => 'Foo Bar',
-		   'uri' => 'http://www.foobar.org/'
+		   'url' => 'http://www.foobar.org/'
 		  },
 		  {
 		   'title' => 'John Smith',
-		   'uri' => 'http://www.smith.invalid.uk/'
+		   'url' => 'http://www.smith.invalid.uk/'
 		  }
 		 ];
 

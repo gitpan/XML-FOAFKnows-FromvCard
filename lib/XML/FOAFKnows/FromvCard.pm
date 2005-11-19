@@ -12,7 +12,7 @@ use IDNA::Punycode;
 
 use base qw( Text::vCard );
 
-our $VERSION = '0.51';
+our $VERSION = '0.6';
 
 sub format {
   my $that  = shift;
@@ -81,7 +81,7 @@ sub format {
       foreach my $url2 ($vcard->get('URL')) {
 	my $tmp = $url2->value;
 	$tmp =~ s/\\:/:/g;
-	push(@urls, {uri => $tmp, title => $fullname});
+	push(@urls, {url => $tmp, title => $fullname});
       }
     }
     $records .= "\n\t</foaf:Person>\n</foaf:knows>\n";

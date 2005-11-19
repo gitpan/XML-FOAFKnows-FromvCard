@@ -1,5 +1,5 @@
-XML-FOAFKnows-FromvCard version 0.51
-====================================
+XML-FOAFKnows-FromvCard version 0.6
+===================================
 
 This module takes a vCard string parses it using L<Text::vCard> and
 attempts to make C<foaf:knows> records from it. It's scope is limited
